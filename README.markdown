@@ -33,10 +33,12 @@ Make your find with HABTM conditions and be happy =]
 ## Examples
 
 $this->Post->superjoin("Tag");
+
 $this->Post->find("all", array(
-	"conditions" => array("Tag.name" => "mytag", "Post.status" => 1)
-	"contain" => array("User", "Model1", "Model2")
+        "conditions" => array("Tag.name" => "mytag", "Post.status" => 1)
+        "contain" => array("User", "Model1", "Model2")
 ));
+
 	/* Output = 
 		array(
 			array(
