@@ -6,20 +6,26 @@
  * 		Active the var $actsAs in your model to use the SuperJoin
  * 			- var $actsAs = array('SuperJoin');
  * 
- * 		Before the find you have to active the behavior (one time for each find)
- * 			- in controller: $this->ModelName->superjoin('AssociationModelName') or $this->ModelName->superjoin(array('AssociationModelName1', 'AssociationModelName2'))
- * 			- in model: $this->superjoin('AssociationModelName') or $this->superjoin(array('AssociationModelName1', 'AssociationModelName2'))
+ * 		In your find you have to declare the superjoin
+ * 			- in controller: $this->ModelName->find("all", array("superjoin" => array("AssociationModelName1", "AssociationModelName2"), "conditions" => array()));
+ * 			- in model: $this->find("all", array("superjoin" => array("AssociationModelName1", "AssociationModelName2"), "conditions" => array()));
+ * 
  * 
  * 		Make your find with HABTM conditions and be happy =]
  * 
  * Obs:
- * 		Work with containable:
+ * 		Work with containable: 
  * 			- If you active some habtm association Model: only the results of this association conditions will show up
  * 			- This active models still not work with containable =/
  * 			- The others associations still working default
- * 			- You can use this with conditions for hasMany, belongsTo and hasOne conditions (cake default) 
+ * 			- You can use this with conditions for hasMany, belongsTo and hasOne conditions (cake default)
  * 
- * @version 1.0
+ *  News: 
+ *  		- Version 1.1 dont need the active anymore.
+ *  		- Changes to work with paginate
+ *  		- Works like containble
+ * 
+ * @version 1.1
  * @link http://github.com/Scoup/SuperJoin
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author Léo Haddad (scoup001@gmail.com)
@@ -61,7 +67,8 @@ class SuperJoinBehavior extends ModelBehavior{
 	 * Called before find to change the joins
 	 */
 	public function beforeFind(&$model, $query){
-		if($this->active){
+		if(isset($query["superjoin"])){
+			$this->setModels($query["superjoin"]);
 			foreach($this->targets as $target){
 				$habtm = $model->hasAndBelongsToMany[$target];
 				App::import("Model", $target);
@@ -83,12 +90,21 @@ class SuperJoinBehavior extends ModelBehavior{
 						)
 				);
 			}
-			$this->active = false;
+//			$this->active = false; DEPRECATED/**
 		}
 		return $query;
 	}
 	
 	/**
+	 * Check if the superjoin is a string or Array and set it a array
+	 */
+	public function setModels($targets){
+		if(!is_array($targets)) $targets = array($targets);
+		$this->targets = $targets;
+	}
+	
+	/**
+	 * DEPRECATED
 	 * Active the join tables to next find
 	 * @param $model Object
 	 * @param $targets String or Array of HABTM associations

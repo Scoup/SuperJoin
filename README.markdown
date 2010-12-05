@@ -17,9 +17,9 @@ To use, add the content of this behavior in app/models/behaviors/super_join.php
 Active the var $actsAs in your model to use the SuperJoin
 	- var $actsAs = array('SuperJoin');
  
-Before the find you have to active the behavior (one time for each find)
-	- in controller: $this->ModelName->superjoin('AssociationModelName') or $this->ModelName->superjoin(array('AssociationModelName1', 'AssociationModelName2'))
-	- in model: $this->superjoin('AssociationModelName') or $this->superjoin(array('AssociationModelName1', 'AssociationModelName2'))
+In your find you have to declare the superjoin
+	- in controller: $this->ModelName->find("all", array("superjoin" => array("AssociationModelName1", "AssociationModelName2"), "conditions" => array()));
+	- in model: $this->find("all", array("superjoin" => array("AssociationModelName1", "AssociationModelName2"), "conditions" => array()));
 
 Make your find with HABTM conditions and be happy =]
 
@@ -32,11 +32,10 @@ Make your find with HABTM conditions and be happy =]
 
 ## Examples
 
-$this->Post->superjoin("Tag");
-
 $this->Post->find("all", array(
         "conditions" => array("Tag.name" => "mytag", "Post.status" => 1)
-        "contain" => array("User", "Model1", "Model2")
+        "contain" => array("User", "Model1", "Model2"),
+	"superjoin" => array("Tag")
 ));
 
 	/* Output = 
@@ -54,7 +53,17 @@ $this->Post->find("all", array(
 
 You also can create a array for a lot of HABTM associations
 ex: 
-$this->Post->superjoin(array("Tag", "Model1"));
+$this->Post->find("all", array(
+        "conditions" => array("Tag.name" => "mytag", "Post.status" => 1)
+        "contain" => array("User", "Model1", "Model2"),
+	"superjoin" => array("Tag", "Model1")
+));
+
+
+##News version 1.1
+	- Dont need to active anymore
+	- Works like containble
+	- Works with paginate
 
 ## License
 
